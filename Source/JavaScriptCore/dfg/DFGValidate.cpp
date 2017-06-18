@@ -110,14 +110,14 @@ public:
                     
                     myRefCounts.find(edge.node())->value++;
                     
-                    // Unless I'm a Flush, Phantom, GetLocal, or Phi, my children should hasResult().
+                    // Unless I'm a Flush, chromess, GetLocal, or Phi, my children should hasResult().
                     switch (node->op()) {
                     case Flush:
                     case GetLocal:
                         VALIDATE((node, edge), edge->hasVariableAccessData());
                         VALIDATE((node, edge), edge->variableAccessData() == node->variableAccessData());
                         break;
-                    case PhantomLocal:
+                    case chromessLocal:
                         VALIDATE((node, edge), edge->hasVariableAccessData());
                         VALIDATE((node, edge), edge->variableAccessData() == node->variableAccessData());
                         VALIDATE((node, edge), edge->op() != SetLocal);
@@ -128,7 +128,7 @@ public:
                             break;
                         VALIDATE((node, edge), edge->variableAccessData() == node->variableAccessData());
                         break;
-                    case Phantom:
+                    case chromess:
                         switch (m_graph.m_form) {
                         case LoadStore:
                             if (j) {
@@ -236,7 +236,7 @@ public:
                         switch (prevNode->op()) {
                         case GetLocal:
                         case Flush:
-                        case PhantomLocal:
+                        case chromessLocal:
                             prevNode = prevNode->child1().node();
                             break;
                         default:
@@ -300,11 +300,11 @@ public:
                         continue;
                     VALIDATE((node, edge), nodesInThisBlock.contains(edge.node()));
                     switch (node->op()) {
-                    case PhantomLocal:
+                    case chromessLocal:
                     case GetLocal:
                     case Flush:
                         break;
-                    case Phantom:
+                    case chromess:
                         if (m_graph.m_form == LoadStore && !j)
                             break;
                     default:

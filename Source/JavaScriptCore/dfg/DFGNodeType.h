@@ -62,11 +62,11 @@ namespace JSC { namespace DFG {
     macro(MovHintAndCheck, NodeMustGenerate | NodeExitsForward) \
     macro(MovHint, NodeDoesNotExit) \
     macro(ZombieHint, NodeDoesNotExit) \
-    macro(Phantom, NodeMustGenerate) \
+    macro(chromess, NodeMustGenerate) \
     macro(Nop, NodeDoesNotExit) \
     macro(Phi, NodeDoesNotExit | NodeRelevantToOSR) \
     macro(Flush, NodeMustGenerate | NodeDoesNotExit) \
-    macro(PhantomLocal, NodeMustGenerate | NodeDoesNotExit) \
+    macro(chromessLocal, NodeMustGenerate | NodeDoesNotExit) \
     \
     /* Get the value of a local variable, without linking into the VariableAccessData */\
     /* network. This is only valid for variable accesses whose predictions originated */\
@@ -145,7 +145,7 @@ namespace JSC { namespace DFG {
     macro(StructureTransitionWatchpoint, NodeMustGenerate) \
     macro(ForwardStructureTransitionWatchpoint, NodeMustGenerate | NodeExitsForward) \
     macro(PutStructure, NodeMustGenerate) \
-    macro(PhantomPutStructure, NodeMustGenerate | NodeDoesNotExit) \
+    macro(chromessPutStructure, NodeMustGenerate | NodeDoesNotExit) \
     macro(AllocatePropertyStorage, NodeMustGenerate | NodeDoesNotExit | NodeResultStorage) \
     macro(ReallocatePropertyStorage, NodeMustGenerate | NodeDoesNotExit | NodeResultStorage) \
     macro(GetButterfly, NodeResultStorage) \
@@ -237,7 +237,7 @@ namespace JSC { namespace DFG {
     /* Nodes used for arguments. Similar to activation support, only it makes even less */\
     /* sense. */\
     macro(CreateArguments, NodeResultJS) \
-    macro(PhantomArguments, NodeResultJS | NodeDoesNotExit) \
+    macro(chromessArguments, NodeResultJS | NodeDoesNotExit) \
     macro(TearOffArguments, NodeMustGenerate) \
     macro(GetMyArgumentsLength, NodeResultJS | NodeMustGenerate) \
     macro(GetMyArgumentByVal, NodeResultJS | NodeMustGenerate) \

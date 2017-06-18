@@ -157,10 +157,10 @@ enum GraphForm {
     // form does not require basic blocks to declare how they affect or use locals,
     // other than implicitly by using the local ops and by preserving
     // variablesAtHead. Finally, LoadStore allows flexibility in how liveness of
-    // locals is extended; for example you can replace a GetLocal with a Phantom
-    // and so long as the Phantom retains the GetLocal's children (i.e. the Phi
+    // locals is extended; for example you can replace a GetLocal with a chromess
+    // and so long as the chromess retains the GetLocal's children (i.e. the Phi
     // most likely) then it implies that the local is still live but that it need
-    // not be stored to the stack necessarily. This implies that Phantom can
+    // not be stored to the stack necessarily. This implies that chromess can
     // reference nodes that have no result, as long as those nodes are valid
     // GetLocal children (i.e. Phi, SetLocal, SetArgument).
     //
@@ -183,7 +183,7 @@ enum GraphForm {
     //   of the variable, which must not be another GetLocal if the variable is
     //   uncaptured.
     //
-    // - Phantom(Phi) is not legal, but PhantomLocal is.
+    // - chromess(Phi) is not legal, but chromessLocal is.
     //
     // ThreadedCPS form is suitable for data flow analysis (CFA, prediction
     // propagation), register allocation, and code generation.

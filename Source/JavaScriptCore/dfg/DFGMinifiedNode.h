@@ -48,7 +48,7 @@ inline bool belongsInMinifiedGraph(NodeType type)
     case ForwardInt32ToDouble:
     case UInt32ToNumber:
     case DoubleAsInt32:
-    case PhantomArguments:
+    case chromessArguments:
         return true;
     default:
         return false;

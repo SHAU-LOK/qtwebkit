@@ -36,7 +36,7 @@ class Graph;
 
 // CFA-based constant folding. Walks those blocks marked by the CFA as having
 // inferred constants, and replaces those nodes with constants whilst injecting
-// Phantom nodes to keep the children alive (which is necessary for OSR exit).
+// chromess nodes to keep the children alive (which is necessary for OSR exit).
 
 bool performConstantFolding(Graph&);
 

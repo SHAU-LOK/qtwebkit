@@ -638,7 +638,7 @@ private:
         case ConvertThis: {
             if (isOtherSpeculation(node->child1()->prediction())) {
                 m_insertionSet.insertNode(
-                    m_indexInBlock, SpecNone, Phantom, node->codeOrigin,
+                    m_indexInBlock, SpecNone, chromess, node->codeOrigin,
                     Edge(node->child1().node(), OtherUse));
                 observeUseKindOnNode<OtherUse>(node->child1().node());
                 node->convertToWeakConstant(m_graph.globalThisObjectFor(node->codeOrigin));
@@ -793,7 +793,7 @@ private:
             break;
         }
 
-        case Phantom:
+        case chromess:
         case Identity: {
             switch (node->child1().useKind()) {
             case NumberUse:
@@ -811,7 +811,7 @@ private:
         case Nop:
         case Phi:
         case ForwardInt32ToDouble:
-        case PhantomPutStructure:
+        case chromessPutStructure:
         case GetIndexedPropertyStorage:
         case LastNodeType:
         case MovHint:
@@ -828,7 +828,7 @@ private:
         case GetLocal:
         case GetCallee:
         case Flush:
-        case PhantomLocal:
+        case chromessLocal:
         case GetLocalUnlinked:
         case InlineStart:
         case GetMyScope:
@@ -857,7 +857,7 @@ private:
         case CreateActivation:
         case TearOffActivation:
         case CreateArguments:
-        case PhantomArguments:
+        case chromessArguments:
         case TearOffArguments:
         case GetMyArgumentsLength:
         case GetMyArgumentsLengthSafe:
@@ -931,7 +931,7 @@ private:
             // decision process much easier.
             observeUseKindOnNode<StringUse>(edge.node());
             m_insertionSet.insertNode(
-                m_indexInBlock, SpecNone, Phantom, node->codeOrigin,
+                m_indexInBlock, SpecNone, chromess, node->codeOrigin,
                 Edge(edge.node(), StringUse));
             edge.setUseKind(KnownStringUse);
             return;
@@ -1073,7 +1073,7 @@ private:
         // We're doing checks up there, so we need to make sure that the
         // *original* inputs to the addition are live up to here.
         m_insertionSet.insertNode(
-            m_indexInBlock, SpecNone, Phantom, node->codeOrigin,
+            m_indexInBlock, SpecNone, chromess, node->codeOrigin,
             Edge(originalLeft), Edge(originalRight));
         
         convertToMakeRope(node);
@@ -1178,7 +1178,7 @@ private:
                 continue;
             
             previousNode->child1() = Edge();
-            previousNode->convertToPhantom();
+            previousNode->convertTochromess();
             return; // Assume we were smart enough to only insert one CheckStructure on the array.
         }
     }

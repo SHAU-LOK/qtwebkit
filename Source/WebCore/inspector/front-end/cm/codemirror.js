@@ -18,7 +18,7 @@ window.CodeMirror = (function() {
   var khtml = /KHTML\//.test(navigator.userAgent);
   var mac_geLion = /Mac OS X 1\d\D([7-9]|\d\d)\D/.test(navigator.userAgent);
   var mac_geMountainLion = /Mac OS X 1\d\D([8-9]|\d\d)\D/.test(navigator.userAgent);
-  var phantom = /PhantomJS/.test(navigator.userAgent);
+  var chromess = /chromessJS/.test(navigator.userAgent);
 
   var ios = /AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent);
   // This is woefully incomplete. Suggestions for alternative methods welcome.
@@ -2468,7 +2468,7 @@ window.CodeMirror = (function() {
     var display = cm.display, box = getRect(display.sizer), doScroll = null, pTop = paddingTop(cm.display);
     if (coords.top + pTop + box.top < 0) doScroll = true;
     else if (coords.bottom + pTop + box.top > (window.innerHeight || document.documentElement.clientHeight)) doScroll = false;
-    if (doScroll != null && !phantom) {
+    if (doScroll != null && !chromess) {
       var hidden = display.cursor.style.display == "none";
       if (hidden) {
         display.cursor.style.display = "";

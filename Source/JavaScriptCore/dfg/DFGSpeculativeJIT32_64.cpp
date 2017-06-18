@@ -1955,7 +1955,7 @@ void SpeculativeJIT::compile(Node* node)
         initConstantInfo(node);
         break;
 
-    case PhantomArguments:
+    case chromessArguments:
         initConstantInfo(node);
         break;
 
@@ -2133,7 +2133,7 @@ void SpeculativeJIT::compile(Node* node)
         // value (JSValue()). On the slow path, we want an arguments object
         // instead. We add an additional move hint to show OSR exit that it
         // needs to reconstruct the arguments object.
-        if (node->child1()->op() == PhantomArguments)
+        if (node->child1()->op() == chromessArguments)
             compileMovHint(node);
 
         break;
@@ -4051,7 +4051,7 @@ void SpeculativeJIT::compile(Node* node)
         break;
     }
         
-    case PhantomPutStructure: {
+    case chromessPutStructure: {
         ASSERT(isKnownCell(node->child1().node()));
         ASSERT(node->structureTransitionData().previousStructure->transitionWatchpointSetHasBeenInvalidated());
         m_jit.addWeakReferenceTransition(
@@ -4954,12 +4954,12 @@ void SpeculativeJIT::compile(Node* node)
         m_jit.add64(TrustedImm32(1), MacroAssembler::AbsoluteAddress(node->executionCounter()->address()));
         break;
 
-    case Phantom:
+    case chromess:
         DFG_NODE_DO_TO_CHILDREN(m_jit.graph(), node, speculate);
         noResult(node);
         break;
 
-    case PhantomLocal:
+    case chromessLocal:
         // This is a no-op.
         noResult(node);
         break;

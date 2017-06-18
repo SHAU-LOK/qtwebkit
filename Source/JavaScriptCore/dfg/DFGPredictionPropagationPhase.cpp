@@ -476,8 +476,8 @@ private:
         case GetLocalUnlinked:
         case GetMyArgumentsLength:
         case GetMyArgumentByVal:
-        case PhantomPutStructure:
-        case PhantomArguments:
+        case chromessPutStructure:
+        case chromessArguments:
         case CheckArray:
         case Arrayify:
         case ArrayifyToStructure:
@@ -535,7 +535,7 @@ private:
         case GlobalVarWatchpoint:
         case GarbageValue:
         case AllocationProfileWatchpoint:
-        case Phantom:
+        case chromess:
         case PutGlobalVar:
         case PutGlobalVarCheck:
         case CheckWatchdogTimer:
@@ -546,7 +546,7 @@ private:
         case InlineStart:
         case Nop:
         case CountExecution:
-        case PhantomLocal:
+        case chromessLocal:
         case Flush:
             break;
             

@@ -88,7 +88,7 @@ private:
                         m_state.variables().operand(
                             m_graph.argumentsRegisterFor(node->codeOrigin)).m_type))
                     break;
-                node->convertToPhantom();
+                node->convertTochromess();
                 eliminated = true;
                 break;
             }
@@ -104,7 +104,7 @@ private:
                     set = node->structureSet();
                 if (value.m_currentKnownStructure.isSubsetOf(set)) {
                     m_state.execute(indexInBlock); // Catch the fact that we may filter on cell.
-                    node->convertToPhantom();
+                    node->convertTochromess();
                     eliminated = true;
                     break;
                 }
@@ -124,7 +124,7 @@ private:
             case Arrayify: {
                 if (!node->arrayMode().alreadyChecked(m_graph, node, m_state.forNode(node->child1())))
                     break;
-                node->convertToPhantom();
+                node->convertTochromess();
                 eliminated = true;
                 break;
             }
@@ -132,7 +132,7 @@ private:
             case CheckFunction: {
                 if (m_state.forNode(node->child1()).value() != node->function())
                     break;
-                node->convertToPhantom();
+                node->convertTochromess();
                 eliminated = true;
                 break;
             }
@@ -180,7 +180,7 @@ private:
                         OpInfo(structure), childEdge);
                 } else if (needsCellCheck) {
                     m_insertionSet.insertNode(
-                        indexInBlock, SpecNone, Phantom, codeOrigin, childEdge);
+                        indexInBlock, SpecNone, chromess, codeOrigin, childEdge);
                 }
                 
                 childEdge.setUseKind(KnownCellUse);
@@ -244,7 +244,7 @@ private:
                         OpInfo(structure), childEdge);
                 } else if (needsCellCheck) {
                     m_insertionSet.insertNode(
-                        indexInBlock, SpecNone, Phantom, codeOrigin, childEdge);
+                        indexInBlock, SpecNone, chromess, codeOrigin, childEdge);
                 }
                 
                 childEdge.setUseKind(KnownCellUse);
@@ -348,11 +348,11 @@ private:
                         // times. It would be correct to just dethread here.
                         
                         m_graph.convertToConstant(node, value);
-                        Node* phantom = m_insertionSet.insertNode(
-                            indexInBlock, SpecNone, PhantomLocal,  codeOrigin,
+                        Node* chromess = m_insertionSet.insertNode(
+                            indexInBlock, SpecNone, chromessLocal,  codeOrigin,
                             OpInfo(variable), Edge(phi));
-                        block->variablesAtHead.operand(variable->local()) = phantom;
-                        block->variablesAtTail.operand(variable->local()) = phantom;
+                        block->variablesAtHead.operand(variable->local()) = chromess;
+                        block->variablesAtTail.operand(variable->local()) = chromess;
                         
                         changed = true;
                         
@@ -366,7 +366,7 @@ private:
             
             m_graph.convertToConstant(node, value);
             m_insertionSet.insertNode(
-                indexInBlock, SpecNone, Phantom, codeOrigin, children);
+                indexInBlock, SpecNone, chromess, codeOrigin, children);
             
             changed = true;
         }

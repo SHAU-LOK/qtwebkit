@@ -82,17 +82,17 @@ private:
                 switch (node->op()) {
                 case GetLocal:
                 case Flush:
-                case PhantomLocal:
+                case chromessLocal:
                     node->children.setChild1(Edge());
                     break;
-                case Phantom:
+                case chromess:
                     if (!node->child1())
                         continue;
                     switch (node->child1()->op()) {
                     case Phi:
                     case SetArgument:
                     case SetLocal:
-                        node->convertToPhantomLocal();
+                        node->convertTochromessLocal();
                         break;
                     default:
                         ASSERT(node->child1()->hasResult());
@@ -159,7 +159,7 @@ private:
             
             switch (otherNode->op()) {
             case Flush:
-            case PhantomLocal:
+            case chromessLocal:
                 otherNode = otherNode->child1().node();
                 if (otherNode->op() == Phi) {
                     // We need to have a GetLocal, so this might as well be the one.
@@ -231,7 +231,7 @@ private:
     }
     
     template<NodeType nodeType, OperandKind operandKind>
-    void canonicalizeFlushOrPhantomLocalFor(Node* node, VariableAccessData* variable, size_t idx)
+    void canonicalizeFlushOrchromessLocalFor(Node* node, VariableAccessData* variable, size_t idx)
     {
         ASSERT(!node->child1());
         
@@ -240,7 +240,7 @@ private:
             
             switch (otherNode->op()) {
             case Flush:
-            case PhantomLocal:
+            case chromessLocal:
             case GetLocal:
                 otherNode = otherNode->child1().node();
                 break;
@@ -250,18 +250,18 @@ private:
             
             ASSERT(otherNode->op() == Phi || otherNode->op() == SetLocal || otherNode->op() == SetArgument);
             
-            if (nodeType == PhantomLocal && otherNode->op() == SetLocal) {
-                // PhantomLocal(SetLocal) doesn't make sense. PhantomLocal means: at this
+            if (nodeType == chromessLocal && otherNode->op() == SetLocal) {
+                // chromessLocal(SetLocal) doesn't make sense. chromessLocal means: at this
                 // point I know I would have been interested in the value of this variable
-                // for the purpose of OSR. PhantomLocal(SetLocal) means: at this point I
+                // for the purpose of OSR. chromessLocal(SetLocal) means: at this point I
                 // know that I would have read the value written by that SetLocal. This is
                 // redundant and inefficient, since really it just means that we want to
                 // be keeping the operand to the SetLocal alive. The SetLocal may die, and
                 // we'll be fine because OSR tracks dead SetLocals.
                 
-                // So we turn this into a Phantom on the child of the SetLocal.
+                // So we turn this into a chromess on the child of the SetLocal.
                 
-                node->convertToPhantom();
+                node->convertTochromess();
                 node->children.setChild1(otherNode->child1());
                 return;
             }
@@ -270,8 +270,8 @@ private:
             // There is nothing wrong with having redundant Flush's. It just needs to
             // be linked appropriately. Note that if there had already been a previous
             // use at tail then we don't override it. It's fine for variablesAtTail to
-            // omit Flushes and PhantomLocals. On the other hand, having it refer to a
-            // Flush or a PhantomLocal if just before it the last use was a GetLocal would
+            // omit Flushes and chromessLocals. On the other hand, having it refer to a
+            // Flush or a chromessLocal if just before it the last use was a GetLocal would
             // seriously confuse the CFA.
             node->children.setChild1(Edge(otherNode));
             return;
@@ -284,13 +284,13 @@ private:
     }
 
     template<NodeType nodeType>
-    void canonicalizeFlushOrPhantomLocal(Node* node)
+    void canonicalizeFlushOrchromessLocal(Node* node)
     {
         VariableAccessData* variable = node->variableAccessData();
         if (operandIsArgument(variable->local()))
-            canonicalizeFlushOrPhantomLocalFor<nodeType, ArgumentOperand>(node, variable, operandToArgument(variable->local()));
+            canonicalizeFlushOrchromessLocalFor<nodeType, ArgumentOperand>(node, variable, operandToArgument(variable->local()));
         else
-            canonicalizeFlushOrPhantomLocalFor<nodeType, LocalOperand>(node, variable, variable->local());
+            canonicalizeFlushOrchromessLocalFor<nodeType, LocalOperand>(node, variable, variable->local());
     }
     
     void canonicalizeSetArgument(Node* node)
@@ -325,16 +325,16 @@ private:
             // The rules for threaded CPS form:
             // 
             // Head variable: describes what is live at the head of the basic block.
-            // Head variable links may refer to Flush, PhantomLocal, Phi, or SetArgument.
+            // Head variable links may refer to Flush, chromessLocal, Phi, or SetArgument.
             // SetArgument may only appear in the root block.
             //
             // Tail variable: the last thing that happened to the variable in the block.
-            // It may be a Flush, PhantomLocal, GetLocal, SetLocal, or SetArgument.
+            // It may be a Flush, chromessLocal, GetLocal, SetLocal, or SetArgument.
             // SetArgument may only appear in the root block. Note that if there ever
-            // was a GetLocal to the variable, and it was followed by PhantomLocals and
+            // was a GetLocal to the variable, and it was followed by chromessLocals and
             // Flushes but not SetLocals, then the tail variable will be the GetLocal.
             // This reflects the fact that you only care that the tail variable is a
-            // Flush or PhantomLocal if nothing else interesting happened.
+            // Flush or chromessLocal if nothing else interesting happened.
             //
             // Child of GetLocal: the operation that the GetLocal keeps alive. For
             // uncaptured locals, it may be a Phi from the current block. For arguments,
@@ -346,7 +346,7 @@ private:
             // Child of Flush: it may be a Phi from the current block or a SetLocal. For
             // arguments it may also be a SetArgument.
             //
-            // Child of PhantomLocal: it may be a Phi from the current block. For
+            // Child of chromessLocal: it may be a Phi from the current block. For
             // arguments it may also be a SetArgument.
             //
             // Children of Phi: other Phis in the same basic block, or any of the
@@ -366,11 +366,11 @@ private:
                 break;
                 
             case Flush:
-                canonicalizeFlushOrPhantomLocal<Flush>(node);
+                canonicalizeFlushOrchromessLocal<Flush>(node);
                 break;
                 
-            case PhantomLocal:
-                canonicalizeFlushOrPhantomLocal<PhantomLocal>(node);
+            case chromessLocal:
+                canonicalizeFlushOrchromessLocal<chromessLocal>(node);
                 break;
                 
             case SetArgument:
@@ -425,7 +425,7 @@ private:
                 } else {
                     switch (variableInPrevious->op()) {
                     case GetLocal:
-                    case PhantomLocal:
+                    case chromessLocal:
                     case Flush:
                         ASSERT(variableInPrevious->variableAccessData() == variableInPrevious->child1()->variableAccessData());
                         variableInPrevious = variableInPrevious->child1().node();

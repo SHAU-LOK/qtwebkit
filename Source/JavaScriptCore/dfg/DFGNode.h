@@ -210,14 +210,14 @@ struct Node {
         m_flags = (defaultFlags(op) & ~NodeExitsForward) | (m_flags & NodeExitsForward);
     }
 
-    void convertToPhantom()
+    void convertTochromess()
     {
-        setOpAndDefaultNonExitFlags(Phantom);
+        setOpAndDefaultNonExitFlags(chromess);
     }
 
-    void convertToPhantomUnchecked()
+    void convertTochromessUnchecked()
     {
-        setOpAndDefaultNonExitFlagsUnchecked(Phantom);
+        setOpAndDefaultNonExitFlagsUnchecked(chromess);
     }
 
     void convertToIdentity()
@@ -265,9 +265,9 @@ struct Node {
         return isStronglyProvedConstantIn(codeOrigin.inlineCallFrame);
     }
     
-    bool isPhantomArguments()
+    bool ischromessArguments()
     {
-        return op() == PhantomArguments;
+        return op() == chromessArguments;
     }
     
     bool hasConstant()
@@ -275,7 +275,7 @@ struct Node {
         switch (op()) {
         case JSConstant:
         case WeakJSConstant:
-        case PhantomArguments:
+        case chromessArguments:
             return true;
         default:
             return false;
@@ -347,10 +347,10 @@ struct Node {
         m_flags &= ~NodeClobbersWorld;
     }
     
-    void convertToPhantomLocal()
+    void convertTochromessLocal()
     {
-        ASSERT(m_op == Phantom && (child1()->op() == Phi || child1()->op() == SetLocal || child1()->op() == SetArgument));
-        m_op = PhantomLocal;
+        ASSERT(m_op == chromess && (child1()->op() == Phi || child1()->op() == SetLocal || child1()->op() == SetArgument));
+        m_op = chromessLocal;
         m_opInfo = child1()->m_opInfo; // Copy the variableAccessData.
         children.setChild1(Edge());
     }
@@ -382,7 +382,7 @@ struct Node {
             return JSValue(weakConstant());
         case JSConstant:
             return codeBlock->constantRegister(FirstConstantRegisterIndex + constantNumber()).get();
-        case PhantomArguments:
+        case chromessArguments:
             return JSValue();
         default:
             RELEASE_ASSERT_NOT_REACHED();
@@ -439,7 +439,7 @@ struct Node {
         case Phi:
         case SetArgument:
         case Flush:
-        case PhantomLocal:
+        case chromessLocal:
             return true;
         default:
             return false;
@@ -824,7 +824,7 @@ struct Node {
     {
         switch (op()) {
         case PutStructure:
-        case PhantomPutStructure:
+        case chromessPutStructure:
         case AllocatePropertyStorage:
         case ReallocatePropertyStorage:
             return true;
@@ -1005,11 +1005,11 @@ struct Node {
         case ValueToInt32:
         case UInt32ToNumber:
         case DoubleAsInt32:
-        case PhantomArguments:
+        case chromessArguments:
             return true;
         case Nop:
             return false;
-        case Phantom:
+        case chromess:
             return child1().useKindUnchecked() != UntypedUse || child2().useKindUnchecked() != UntypedUse || child3().useKindUnchecked() != UntypedUse;
         default:
             return shouldGenerate();

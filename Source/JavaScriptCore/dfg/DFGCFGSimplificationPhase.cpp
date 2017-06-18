@@ -90,7 +90,7 @@ public:
                     }
                 
                     // FIXME: Block only has a jump -> remove. This is tricky though because of
-                    // liveness. What we really want is to slam in a phantom at the end of the
+                    // liveness. What we really want is to slam in a chromess at the end of the
                     // block, after the terminal. But we can't right now. :-(
                     // Idea: what if I slam the ghosties into my successor? Nope, that's
                     // suboptimal, because if my successor has multiple predecessors then we'll
@@ -134,7 +134,7 @@ public:
                         
                             ASSERT(block->last()->isTerminal());
                             CodeOrigin boundaryCodeOrigin = block->last()->codeOrigin;
-                            block->last()->convertToPhantom();
+                            block->last()->convertTochromess();
                             ASSERT(block->last()->refCount() == 1);
                         
                             jettisonBlock(blockIndex, notTakenBlockIndex, boundaryCodeOrigin);
@@ -167,7 +167,7 @@ public:
                             Node* branch = block->last();
                             ASSERT(branch->isTerminal());
                             ASSERT(branch->op() == Branch);
-                            branch->convertToPhantom();
+                            branch->convertTochromess();
                             ASSERT(branch->refCount() == 1);
                             
                             block->appendNode(
@@ -270,7 +270,7 @@ private:
         if (livenessNode->variableAccessData()->isCaptured())
             return;
         block->appendNode(
-            m_graph, SpecNone, PhantomLocal, codeOrigin, 
+            m_graph, SpecNone, chromessLocal, codeOrigin, 
             OpInfo(livenessNode->variableAccessData()));
     }
     
@@ -309,17 +309,17 @@ private:
         // This will add all of the nodes in secondBlock to firstBlock, but in so doing
         // it will also ensure that any GetLocals from the second block that refer to
         // SetLocals in the first block are relinked. If jettisonedBlock is not NoBlock,
-        // then Phantoms are inserted for anything that the jettisonedBlock would have
+        // then chromesss are inserted for anything that the jettisonedBlock would have
         // kept alive.
         
         BasicBlock* firstBlock = m_graph.m_blocks[firstBlockIndex].get();
         BasicBlock* secondBlock = m_graph.m_blocks[secondBlockIndex].get();
         
         // Remove the terminal of firstBlock since we don't need it anymore. Well, we don't
-        // really remove it; we actually turn it into a Phantom.
+        // really remove it; we actually turn it into a chromess.
         ASSERT(firstBlock->last()->isTerminal());
         CodeOrigin boundaryCodeOrigin = firstBlock->last()->codeOrigin;
-        firstBlock->last()->convertToPhantom();
+        firstBlock->last()->convertTochromess();
         ASSERT(firstBlock->last()->refCount() == 1);
         
         if (jettisonedBlockIndex != NoBlock) {

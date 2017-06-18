@@ -264,7 +264,7 @@ void SpeculativeJIT::convertLastOSRExitToForward(const ValueRecovery& valueRecov
         setLocal = m_jit.graph().m_blocks[m_block]->at(++setLocalIndexInBlock);
         hadInt32ToDouble = true;
     }
-    if (setLocal->op() == Flush || setLocal->op() == Phantom)
+    if (setLocal->op() == Flush || setLocal->op() == chromess)
         setLocal = m_jit.graph().m_blocks[m_block]->at(++setLocalIndexInBlock);
         
     if (hadInt32ToDouble)
