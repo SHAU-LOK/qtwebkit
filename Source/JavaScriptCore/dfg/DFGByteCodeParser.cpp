@@ -165,7 +165,7 @@ private:
     // Handle calls. This resolves issues surrounding inlining and intrinsics.
     void handleCall(Interpreter*, Instruction* currentInstruction, NodeType op, CodeSpecializationKind);
     void emitFunctionChecks(const CallLinkStatus&, Node* callTarget, int registerOffset, CodeSpecializationKind);
-    void emitArgumentPhantoms(int registerOffset, int argumentCountIncludingThis, CodeSpecializationKind);
+    void emitArgumentchromesss(int registerOffset, int argumentCountIncludingThis, CodeSpecializationKind);
     // Handle inlining. Return true if it succeeded, false if we need to plant a call.
     bool handleInlining(bool usesResult, Node* callTargetNode, int resultOperand, const CallLinkStatus&, int registerOffset, int argumentCountIncludingThis, unsigned nextOffset, CodeSpecializationKind);
     // Handle setting the result of an intrinsic.
@@ -1186,10 +1186,10 @@ void ByteCodeParser::handleCall(Interpreter* interpreter, Instruction* currentIn
 
     if (InternalFunction* function = callLinkStatus.internalFunction()) {
         if (handleConstantInternalFunction(usesResult, resultOperand, function, registerOffset, argumentCountIncludingThis, prediction, kind)) {
-            // This phantoming has to be *after* the code for the intrinsic, to signify that
+            // This chromessing has to be *after* the code for the intrinsic, to signify that
             // the inputs must be kept alive whatever exits the intrinsic may do.
-            addToGraph(Phantom, callTarget);
-            emitArgumentPhantoms(registerOffset, argumentCountIncludingThis, kind);
+            addToGraph(chromess, callTarget);
+            emitArgumentchromesss(registerOffset, argumentCountIncludingThis, kind);
             return;
         }
         
@@ -1203,10 +1203,10 @@ void ByteCodeParser::handleCall(Interpreter* interpreter, Instruction* currentIn
         emitFunctionChecks(callLinkStatus, callTarget, registerOffset, kind);
             
         if (handleIntrinsic(usesResult, resultOperand, intrinsic, registerOffset, argumentCountIncludingThis, prediction)) {
-            // This phantoming has to be *after* the code for the intrinsic, to signify that
+            // This chromessing has to be *after* the code for the intrinsic, to signify that
             // the inputs must be kept alive whatever exits the intrinsic may do.
-            addToGraph(Phantom, callTarget);
-            emitArgumentPhantoms(registerOffset, argumentCountIncludingThis, kind);
+            addToGraph(chromess, callTarget);
+            emitArgumentchromesss(registerOffset, argumentCountIncludingThis, kind);
             if (m_graph.m_compilation)
                 m_graph.m_compilation->noticeInlinedCall();
             return;
@@ -1229,7 +1229,7 @@ void ByteCodeParser::emitFunctionChecks(const CallLinkStatus& callLinkStatus, No
         thisArgument = 0;
 
     if (callLinkStatus.isProved()) {
-        addToGraph(Phantom, callTarget, thisArgument);
+        addToGraph(chromess, callTarget, thisArgument);
         return;
     }
     
@@ -1246,10 +1246,10 @@ void ByteCodeParser::emitFunctionChecks(const CallLinkStatus& callLinkStatus, No
     }
 }
 
-void ByteCodeParser::emitArgumentPhantoms(int registerOffset, int argumentCountIncludingThis, CodeSpecializationKind kind)
+void ByteCodeParser::emitArgumentchromesss(int registerOffset, int argumentCountIncludingThis, CodeSpecializationKind kind)
 {
     for (int i = kind == CodeForCall ? 0 : 1; i < argumentCountIncludingThis; ++i)
-        addToGraph(Phantom, get(registerOffset + argumentToOperand(i)));
+        addToGraph(chromess, get(registerOffset + argumentToOperand(i)));
 }
 
 bool ByteCodeParser::handleInlining(bool usesResult, Node* callTargetNode, int resultOperand, const CallLinkStatus& callLinkStatus, int registerOffset, int argumentCountIncludingThis, unsigned nextOffset, CodeSpecializationKind kind)
@@ -1452,7 +1452,7 @@ bool ByteCodeParser::handleMinMax(bool usesResult, int resultOperand, NodeType o
      
     if (argumentCountIncludingThis == 2) { // Math.min(x)
         Node* result = get(registerOffset + argumentToOperand(1));
-        addToGraph(Phantom, Edge(result, NumberUse));
+        addToGraph(chromess, Edge(result, NumberUse));
         setIntrinsicResult(usesResult, resultOperand, result);
         return true;
     }
@@ -1742,12 +1742,12 @@ void ByteCodeParser::handleGetById(
     
     // Unless we want bugs like https://bugs.webkit.org/show_bug.cgi?id=88783, we need to
     // ensure that the base of the original get_by_id is kept alive until we're done with
-    // all of the speculations. We only insert the Phantom if there had been a CheckStructure
+    // all of the speculations. We only insert the chromess if there had been a CheckStructure
     // on something other than the base following the CheckStructure on base, or if the
     // access was compiled to a WeakJSConstant specific value, in which case we might not
     // have any explicit use of the base at all.
     if (getByIdStatus.specificValue() || originalBaseForBaselineJIT != base)
-        addToGraph(Phantom, originalBaseForBaselineJIT);
+        addToGraph(chromess, originalBaseForBaselineJIT);
     
     if (getByIdStatus.specificValue()) {
         ASSERT(getByIdStatus.specificValue().isCell());
@@ -1981,7 +1981,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
             // some empty blocks in some cases. When parseBlock() returns with an empty
             // block, it will get repurposed instead of creating a new one. Note that this
             // logic relies on every bytecode resulting in one or more nodes, which would
-            // be true anyway except for op_loop_hint, which emits a Phantom to force this
+            // be true anyway except for op_loop_hint, which emits a chromess to force this
             // to be true.
             if (!m_currentBlock->isEmpty())
                 addToGraph(Jump, OpInfo(m_currentIndex));
@@ -2052,7 +2052,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                 if (allocationProfile) {
                     addToGraph(AllocationProfileWatchpoint, OpInfo(function));
                     // The callee is still live up to this point.
-                    addToGraph(Phantom, callee);
+                    addToGraph(chromess, callee);
                     set(currentInstruction[1].u.operand,
                         addToGraph(NewObject, OpInfo(allocationProfile->structure())));
                     alreadyEmitted = true;
@@ -2357,7 +2357,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                 toStringNodes[i] = addToGraph(ToString, get(startOperand + i));
 
             for (int i = 0; i < numOperands; i++)
-                addToGraph(Phantom, toStringNodes[i]);
+                addToGraph(chromess, toStringNodes[i]);
 
             Node* operands[AdjacencyList::Size];
             unsigned indexInOperands = 0;
@@ -2745,7 +2745,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                 } else if (state == FalseTriState) {
                     // Emit a placeholder for this bytecode operation but otherwise
                     // just fall through.
-                    addToGraph(Phantom);
+                    addToGraph(chromess);
                     NEXT_OPCODE(op_jtrue);
                 }
             }
@@ -2764,7 +2764,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                 } else if (state == TrueTriState) {
                     // Emit a placeholder for this bytecode operation but otherwise
                     // just fall through.
-                    addToGraph(Phantom);
+                    addToGraph(chromess);
                     NEXT_OPCODE(op_jfalse);
                 }
             }
@@ -2804,7 +2804,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     } else {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jless);
                     }
                 }
@@ -2830,7 +2830,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     } else {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jlesseq);
                     }
                 }
@@ -2856,7 +2856,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     } else {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jgreater);
                     }
                 }
@@ -2882,7 +2882,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     } else {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jgreatereq);
                     }
                 }
@@ -2905,7 +2905,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     if (a < b) {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jnless);
                     } else {
                         addToGraph(Jump, OpInfo(m_currentIndex + relativeOffset));
@@ -2931,7 +2931,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     if (a <= b) {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jnlesseq);
                     } else {
                         addToGraph(Jump, OpInfo(m_currentIndex + relativeOffset));
@@ -2957,7 +2957,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     if (a > b) {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jngreater);
                     } else {
                         addToGraph(Jump, OpInfo(m_currentIndex + relativeOffset));
@@ -2983,7 +2983,7 @@ bool ByteCodeParser::parseBlock(unsigned limit)
                     if (a >= b) {
                         // Emit a placeholder for this bytecode operation but otherwise
                         // just fall through.
-                        addToGraph(Phantom);
+                        addToGraph(chromess);
                         NEXT_OPCODE(op_jngreatereq);
                     } else {
                         addToGraph(Jump, OpInfo(m_currentIndex + relativeOffset));
@@ -3168,8 +3168,8 @@ bool ByteCodeParser::parseBlock(unsigned limit)
             switch (putToBase->m_kind) {
             case PutToBaseOperation::Uninitialised:
                 addToGraph(ForceOSRExit);
-                addToGraph(Phantom, get(base));
-                addToGraph(Phantom, get(value));
+                addToGraph(chromess, get(base));
+                addToGraph(chromess, get(value));
                 break;
 
             case PutToBaseOperation::GlobalVariablePutChecked: {
@@ -3198,8 +3198,8 @@ bool ByteCodeParser::parseBlock(unsigned limit)
             case PutToBaseOperation::GlobalPropertyPut: {
                 if (!putToBase->m_structure) {
                     addToGraph(ForceOSRExit);
-                    addToGraph(Phantom, get(base));
-                    addToGraph(Phantom, get(value));
+                    addToGraph(chromess, get(base));
+                    addToGraph(chromess, get(value));
                     NEXT_OPCODE(op_put_to_base);
                 }
                 Node* baseNode = get(base);
@@ -3304,9 +3304,9 @@ bool ByteCodeParser::parseBlock(unsigned limit)
             if (m_vm->watchdog.isEnabled())
                 addToGraph(CheckWatchdogTimer);
             else {
-                // Emit a phantom node to ensure that there is a placeholder
+                // Emit a chromess node to ensure that there is a placeholder
                 // node for this bytecode op.
-                addToGraph(Phantom);
+                addToGraph(chromess);
             }
             
             NEXT_OPCODE(op_loop_hint);

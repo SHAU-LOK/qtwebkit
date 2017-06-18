@@ -23845,11 +23845,11 @@
         resources that resource might link to. This is the key to why we're
         so wrong at the beginning.
         (2) Improve "when to do first layout" heuristic. A JavaScript query
-        for a style property forces layout, creating a phantom first layout 
+        for a style property forces layout, creating a chromess first layout 
         with no content, essentially nullifying 2a for certain pages.
         
         Filed <rdar://problem/4475834> to track estimating the number of 
-        linked resources. Phantom layouts are already on Hyatt's radar.
+        linked resources. chromess layouts are already on Hyatt's radar.
 
         * WebView/WebFrame.m:
         (-[WebFrame _setState:]): Update firstLayoutDone

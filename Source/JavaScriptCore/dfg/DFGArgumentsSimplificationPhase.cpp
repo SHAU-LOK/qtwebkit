@@ -148,7 +148,7 @@ public:
                 switch (node->op()) {
                 case GetLocal:
                 case Flush:
-                case PhantomLocal:
+                case chromessLocal:
                     m_isLive.add(node->variableAccessData());
                     break;
                 default:
@@ -191,7 +191,7 @@ public:
                     VariableAccessData* variableAccessData = node->variableAccessData();
                     int argumentsRegister =
                         m_graph.uncheckedArgumentsRegisterFor(node->codeOrigin);
-                    if (source->op() != CreateArguments && source->op() != PhantomArguments) {
+                    if (source->op() != CreateArguments && source->op() != chromessArguments) {
                         // Make sure that the source of the SetLocal knows that if it's
                         // a variable that we think is aliased to the arguments, then it
                         // may escape at this point. In future, we could track transitive
@@ -316,12 +316,12 @@ public:
                     break;
                 }
                     
-                case Phantom:
-                    // We don't care about phantom uses, since phantom uses are all about
+                case chromess:
+                    // We don't care about chromess uses, since chromess uses are all about
                     // just keeping things alive for OSR exit. If something - like the
                     // CreateArguments - is just being kept alive, then this transformation
-                    // will not break this, since the Phantom will now just keep alive a
-                    // PhantomArguments and OSR exit will still do the right things.
+                    // will not break this, since the chromess will now just keep alive a
+                    // chromessArguments and OSR exit will still do the right things.
                     break;
                     
                 case CheckStructure:
@@ -470,7 +470,7 @@ public:
                     break;
                 }
                     
-                case PhantomLocal: {
+                case chromessLocal: {
                     VariableAccessData* variableAccessData = node->variableAccessData();
                     
                     if (variableAccessData->isCaptured()
@@ -478,7 +478,7 @@ public:
                         || m_createsArguments.contains(node->codeOrigin.inlineCallFrame))
                         break;
                     
-                    // Turn PhantomLocals into just GetLocals. This will preserve the threading
+                    // Turn chromessLocals into just GetLocals. This will preserve the threading
                     // of the local through to this point, but will allow it to die, causing
                     // only OSR to know about it.
 
@@ -498,18 +498,18 @@ public:
                     break;
                 }
                     
-                case Phantom: {
-                    // It's highly likely that we will have a Phantom referencing either
+                case chromess: {
+                    // It's highly likely that we will have a chromess referencing either
                     // CreateArguments, or a local op for the arguments register, or a
                     // local op for an arguments-aliased variable. In any of those cases,
-                    // we should remove the phantom reference, since:
-                    // 1) Phantoms only exist to aid OSR exit. But arguments simplification
+                    // we should remove the chromess reference, since:
+                    // 1) chromesss only exist to aid OSR exit. But arguments simplification
                     //    has its own OSR exit story, which is to inform OSR exit to reify
                     //    the arguments as necessary.
-                    // 2) The Phantom may keep the CreateArguments node alive, which is
+                    // 2) The chromess may keep the CreateArguments node alive, which is
                     //    precisely what we don't want.
                     for (unsigned i = 0; i < AdjacencyList::Size; ++i)
-                        removeArgumentsReferencingPhantomChild(node, i);
+                        removeArgumentsReferencingchromessChild(node, i);
                     break;
                 }
                     
@@ -518,10 +518,10 @@ public:
                 case StructureTransitionWatchpoint:
                 case ForwardStructureTransitionWatchpoint:
                 case CheckArray: {
-                    // We can just get rid of this node, if it references a phantom argument.
+                    // We can just get rid of this node, if it references a chromess argument.
                     if (!isOKToOptimize(node->child1().node()))
                         break;
-                    node->convertToPhantom();
+                    node->convertTochromess();
                     node->children.setChild1(Edge());
                     break;
                 }
@@ -632,7 +632,7 @@ public:
                         indexInBlock, SpecNone, CheckArgumentsNotCreated,
                         codeOrigin);
                     insertionSet.insertNode(
-                        indexInBlock, SpecNone, Phantom, codeOrigin,
+                        indexInBlock, SpecNone, chromess, codeOrigin,
                         children);
                     
                     changed = true;
@@ -665,15 +665,15 @@ public:
                 if (node->op() != CreateArguments)
                     continue;
                 // If this is a CreateArguments for an InlineCallFrame* that does
-                // not create arguments, then replace it with a PhantomArguments.
-                // PhantomArguments is a non-executing node that just indicates
+                // not create arguments, then replace it with a chromessArguments.
+                // chromessArguments is a non-executing node that just indicates
                 // that the node should be reified as an arguments object on OSR
                 // exit.
                 if (m_createsArguments.contains(node->codeOrigin.inlineCallFrame))
                     continue;
                 insertionSet.insertNode(
-                    indexInBlock, SpecNone, Phantom, node->codeOrigin, node->children);
-                node->setOpAndDefaultFlags(PhantomArguments);
+                    indexInBlock, SpecNone, chromess, node->codeOrigin, node->children);
+                node->setOpAndDefaultFlags(chromessArguments);
                 node->children.reset();
                 changed = true;
             }
@@ -817,7 +817,7 @@ private:
         return false;
     }
     
-    void removeArgumentsReferencingPhantomChild(Node* node, unsigned edgeIndex)
+    void removeArgumentsReferencingchromessChild(Node* node, unsigned edgeIndex)
     {
         Edge edge = node->children.child(edgeIndex);
         if (!edge)

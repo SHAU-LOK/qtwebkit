@@ -553,7 +553,7 @@ private:
             case ForwardCheckStructure:
                 return 0;
                 
-            case PhantomPutStructure:
+            case chromessPutStructure:
                 if (node->child1() == child1) // No need to retrace our steps.
                     return 0;
                 break;
@@ -958,9 +958,9 @@ private:
         return result;
     }
     
-    void eliminateIrrelevantPhantomChildren(Node* node)
+    void eliminateIrrelevantchromessChildren(Node* node)
     {
-        ASSERT(node->op() == Phantom);
+        ASSERT(node->op() == chromess);
         for (unsigned i = 0; i < AdjacencyList::Size; ++i) {
             Edge edge = node->children.child(i);
             if (!edge)
@@ -987,8 +987,8 @@ private:
         dataLogF("   Replacing @%u -> @%u", m_currentNode->index(), replacement->index());
 #endif
         
-        m_currentNode->convertToPhantom();
-        eliminateIrrelevantPhantomChildren(m_currentNode);
+        m_currentNode->convertTochromess();
+        eliminateIrrelevantchromessChildren(m_currentNode);
         
         // At this point we will eliminate all references to this node.
         m_currentNode->replacement = replacement;
@@ -1005,20 +1005,20 @@ private:
 #endif
         
         ASSERT(m_currentNode->mustGenerate());
-        m_currentNode->convertToPhantom();
-        eliminateIrrelevantPhantomChildren(m_currentNode);
+        m_currentNode->convertTochromess();
+        eliminateIrrelevantchromessChildren(m_currentNode);
         
         m_changed = true;
     }
     
-    void eliminate(Node* node, NodeType phantomType = Phantom)
+    void eliminate(Node* node, NodeType chromessType = chromess)
     {
         if (!node)
             return;
         ASSERT(node->mustGenerate());
-        node->setOpAndDefaultNonExitFlags(phantomType);
-        if (phantomType == Phantom)
-            eliminateIrrelevantPhantomChildren(node);
+        node->setOpAndDefaultNonExitFlags(chromessType);
+        if (chromessType == chromess)
+            eliminateIrrelevantchromessChildren(node);
         
         m_changed = true;
     }
@@ -1176,7 +1176,7 @@ private:
                 break;
             ASSERT(replacement->op() == SetLocal);
             // FIXME: Investigate using mayExit as a further optimization.
-            node->convertToPhantom();
+            node->convertTochromess();
             Node* dataNode = replacement->child1().node();
             ASSERT(dataNode->hasResult());
             m_graph.clearAndDerefChild1(node);
@@ -1307,7 +1307,7 @@ private:
         case PutStructure:
             if (cseMode == NormalCSE)
                 break;
-            eliminate(putStructureStoreElimination(node->child1().node()), PhantomPutStructure);
+            eliminate(putStructureStoreElimination(node->child1().node()), chromessPutStructure);
             break;
 
         case CheckFunction:
@@ -1356,10 +1356,10 @@ private:
             eliminate(putByOffsetStoreElimination(m_graph.m_storageAccessData[node->storageAccessDataIndex()].identifierNumber, node->child1().node()));
             break;
             
-        case Phantom:
-            // FIXME: we ought to remove Phantom's that have no children.
+        case chromess:
+            // FIXME: we ought to remove chromess's that have no children.
             
-            eliminateIrrelevantPhantomChildren(node);
+            eliminateIrrelevantchromessChildren(node);
             break;
             
         default:

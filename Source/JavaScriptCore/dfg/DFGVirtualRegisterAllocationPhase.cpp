@@ -74,7 +74,7 @@ public:
                 switch (node->op()) {
                 case Phi:
                 case Flush:
-                case PhantomLocal:
+                case chromessLocal:
                     continue;
                 case GetLocal:
                     ASSERT(!node->child1()->hasResult());

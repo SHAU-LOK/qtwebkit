@@ -911,7 +911,7 @@
         
         Added a constant folding phase that uses this new information to
         replace pure operations known to have constant results with
-        JSConstants. This is OSR-exit-aware, in that it will prepend a Phantom
+        JSConstants. This is OSR-exit-aware, in that it will prepend a chromess
         that refers to all of the kids of the node we replaced.
 
         * CMakeLists.txt:
@@ -22419,7 +22419,7 @@
           
         - Indexed property storage optimizations were failing to deref their
           children, or to deref the indexed property storage node itself. Also,
-          they used the Phantom node as a replacement. But the Phantom node is
+          they used the chromess node as a replacement. But the chromess node is
           must-generate, which was causing bizarre issues. So this introduces a
           Nop node, which should be used in cases where you want a node that is
           skipped and has no children.
@@ -42919,7 +42919,7 @@
         may have side effects. Because it changes the live-ranges of nodes, the
         virtual register allocator had to be moved into the propagator so that it
         runs after CSE. To ensure that the back-end knows to keep the inputs to
-        any eliminated node alive for OSR, a new node type, Phantom, was introduced.
+        any eliminated node alive for OSR, a new node type, chromess, was introduced.
         It is a no-op but prolonges the live-range of its inputs.
         
         This is an 80% speed-up on imaging-gaussian-blur, and a 10% speed-up on

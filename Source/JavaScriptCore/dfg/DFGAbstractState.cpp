@@ -276,7 +276,7 @@ bool AbstractState::executeEffects(unsigned indexInBlock, Node* node)
     switch (node->op()) {
     case JSConstant:
     case WeakJSConstant:
-    case PhantomArguments: {
+    case chromessArguments: {
         forNode(node).set(m_graph.valueOfJSConstant(node));
         break;
     }
@@ -1364,7 +1364,7 @@ bool AbstractState::executeEffects(unsigned indexInBlock, Node* node)
     }
             
     case PutStructure:
-    case PhantomPutStructure:
+    case chromessPutStructure:
         if (!forNode(node->child1()).m_currentKnownStructure.isClear()) {
             clobberStructures(indexInBlock);
             forNode(node->child1()).set(node->structureTransitionData().newStructure);
@@ -1532,7 +1532,7 @@ bool AbstractState::executeEffects(unsigned indexInBlock, Node* node)
             
     case Phi:
     case Flush:
-    case PhantomLocal:
+    case chromessLocal:
     case Breakpoint:
         break;
             
@@ -1561,7 +1561,7 @@ bool AbstractState::executeEffects(unsigned indexInBlock, Node* node)
         node->setCanExit(true);
         break;
             
-    case Phantom:
+    case chromess:
     case InlineStart:
     case Nop:
     case CountExecution:
@@ -1663,7 +1663,7 @@ inline bool AbstractState::mergeStateAtTail(AbstractValue& destination, Abstract
         switch (node->op()) {
         case Phi:
         case SetArgument:
-        case PhantomLocal:
+        case chromessLocal:
         case Flush:
             // The block transfers the value from head to tail.
             source = inVariable;

@@ -97,7 +97,7 @@ bool VariableEventStream::tryToSetConstantRecovery(ValueRecovery& recovery, Code
         return true;
     }
     
-    if (node->op() == PhantomArguments) {
+    if (node->op() == chromessArguments) {
         recovery = ValueRecovery::argumentsThatWereNotCreated();
         return true;
     }

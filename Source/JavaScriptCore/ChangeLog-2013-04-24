@@ -4516,9 +4516,9 @@
         
         ToString should call speculateStringObject() even if you know that it's a string object, since
         it calls it to also get the watchpoint. Note that even with this change, if you do
-        Phantom(Check:StringObject:@a), it might get eliminated just because we proved that @a is a
+        chromess(Check:StringObject:@a), it might get eliminated just because we proved that @a is a
         string object (thereby eliminating the prototype watchpoint); that's fine since ToString is
-        MustGenerate and never decays to Phantom.
+        MustGenerate and never decays to chromess.
 
         * dfg/DFGSpeculativeJIT.cpp:
         (JSC::DFG::SpeculativeJIT::compileToStringOnCell):
@@ -5382,17 +5382,17 @@
         (AdjacencyList):
         (JSC::DFG::AdjacencyList::removeEdge):
         * dfg/DFGArgumentsSimplificationPhase.cpp:
-        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingPhantomChild):
+        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingchromessChild):
         * dfg/DFGBackwardsPropagationPhase.cpp:
         (JSC::DFG::BackwardsPropagationPhase::propagate):
         * dfg/DFGByteCodeParser.cpp:
         (JSC::DFG::ByteCodeParser::parseBlock):
         * dfg/DFGCSEPhase.cpp:
         (JSC::DFG::CSEPhase::putStructureStoreElimination):
-        (JSC::DFG::CSEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::CSEPhase::eliminateIrrelevantchromessChildren):
         (JSC::DFG::CSEPhase::performNodeCSE):
         * dfg/DFGDCEPhase.cpp:
-        (JSC::DFG::DCEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::DCEPhase::eliminateIrrelevantchromessChildren):
         * dfg/DFGFixupPhase.cpp:
         (JSC::DFG::FixupPhase::fixupNode):
         (JSC::DFG::FixupPhase::createToString):
@@ -5579,10 +5579,10 @@
 
         Reviewed by Filip Pizlo.
 
-        We were trying to convert an NewArray to a Phantom, but convertToPhantom doesn't handle
-        nodes with variable arguments.  Added code to insert a Phantom node in front of all the
-        live children of a var args node.  Added ASSERT not var args for convertToPhantom to
-        catch any other similar cases.  Added a new convertToPhantomUnchecked() for converting 
+        We were trying to convert an NewArray to a chromess, but convertTochromess doesn't handle
+        nodes with variable arguments.  Added code to insert a chromess node in front of all the
+        live children of a var args node.  Added ASSERT not var args for convertTochromess to
+        catch any other similar cases.  Added a new convertTochromessUnchecked() for converting 
         var arg nodes.
 
         * dfg/DFGDCEPhase.cpp:
@@ -5591,7 +5591,7 @@
         (Node):
         (JSC::DFG::Node::setOpAndDefaultNonExitFlags): Added ASSERT(!(m_flags & NodeHasVarArgs))
         (JSC::DFG::Node::setOpAndDefaultNonExitFlagsUnchecked):
-        (JSC::DFG::Node::convertToPhantomUnchecked):
+        (JSC::DFG::Node::convertTochromessUnchecked):
 
 2013-03-19  Mark Hahnenberg  <mhahnenberg@apple.com>
 
@@ -5863,7 +5863,7 @@
         * dfg/DFGByteCodeParser.cpp:
         (ByteCodeParser):
         (JSC::DFG::ByteCodeParser::handleCall):
-        (JSC::DFG::ByteCodeParser::emitArgumentPhantoms):
+        (JSC::DFG::ByteCodeParser::emitArgumentchromesss):
         (DFG):
         (JSC::DFG::ByteCodeParser::handleConstantInternalFunction):
         * dfg/DFGCSEPhase.cpp:
@@ -6553,7 +6553,7 @@
         (JSC::DFG::CPSRethreadingPhase::clearIsLoadedFrom):
         (CPSRethreadingPhase):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeGetLocalFor):
-        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrPhantomLocalFor):
+        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrchromessLocalFor):
         * dfg/DFGDriver.cpp:
         (JSC::DFG::compile):
         * dfg/DFGGraph.cpp:
@@ -6676,7 +6676,7 @@
         (JSC::DFG::CPSRethreadingPhase::run):
         (CPSRethreadingPhase):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeGetLocalFor):
-        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrPhantomLocalFor):
+        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrchromessLocalFor):
         * dfg/DFGDriver.cpp:
         (JSC::DFG::compile):
         * dfg/DFGGraph.cpp:
@@ -6756,7 +6756,7 @@
         (JSC::DFG::CPSRethreadingPhase::clearIsLoadedFrom):
         (CPSRethreadingPhase):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeGetLocalFor):
-        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrPhantomLocalFor):
+        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrchromessLocalFor):
         * dfg/DFGDriver.cpp:
         (JSC::DFG::compile):
         * dfg/DFGGraph.cpp:
@@ -6852,12 +6852,12 @@
         Reviewed by Mark Hahnenberg.
         
         Unreachable code is not touched by CFA and so thinks that even untyped uses are checked.
-        But dead untyped uses don't need checks and hence don't need to be Phantom'd. The DCE knew
-        this in findTypeCheckRoot() but not in eliminateIrrelevantPhantomChildren(), leading to a
-        Phantom node that had another Phantom node as one of its kids.
+        But dead untyped uses don't need checks and hence don't need to be chromess'd. The DCE knew
+        this in findTypeCheckRoot() but not in eliminateIrrelevantchromessChildren(), leading to a
+        chromess node that had another chromess node as one of its kids.
 
         * dfg/DFGDCEPhase.cpp:
-        (JSC::DFG::DCEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::DCEPhase::eliminateIrrelevantchromessChildren):
 
 2013-03-07  Filip Pizlo  <fpizlo@apple.com>
 
@@ -7014,7 +7014,7 @@
         
         This gets rid of the speculated forms of ConvertThis in the backend, and has Fixup
         convert them to either Identity(Object:@child) if the child is predicted object, or
-        Phantom(Other:@child) ; WeakJSConstant(global this object) if it's predicted Other.
+        chromess(Other:@child) ; WeakJSConstant(global this object) if it's predicted Other.
         
         The goal of this is to ensure that the optimization fixpoint doesn't create
         Identity's, since doing so requires a rerun of CSE. So far this isn't a speed-up
@@ -7441,10 +7441,10 @@
         simplification phase employs its own light-weight liveness analysis. Both phases
         previously just used reference counts.
         
-        The largest change is that now, dead nodes get turned into Phantoms. Those
-        Phantoms will retain those child edges that are not proven. This ensures that any
+        The largest change is that now, dead nodes get turned into chromesss. Those
+        chromesss will retain those child edges that are not proven. This ensures that any
         type checks performed by a dead node remain even after the node is killed. On the
-        other hand, this Phantom conversion means that we need special handling for
+        other hand, this chromess conversion means that we need special handling for
         SetLocal. I decided to make the four forms of SetLocal explicit:
         
         MovHint(@a, rK): Just indicates that node @a contains the value that would have
@@ -7484,7 +7484,7 @@
         * dfg/DFGArgumentsSimplificationPhase.cpp:
         (JSC::DFG::ArgumentsSimplificationPhase::run):
         (ArgumentsSimplificationPhase):
-        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingPhantomChild):
+        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingchromessChild):
         * dfg/DFGBasicBlock.h:
         (BasicBlock):
         * dfg/DFGBasicBlockInlines.h:
@@ -7502,7 +7502,7 @@
         (JSC::DFG::CPSRethreadingPhase::run):
         (JSC::DFG::CPSRethreadingPhase::addPhiSilently):
         * dfg/DFGCSEPhase.cpp:
-        (JSC::DFG::CSEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::CSEPhase::eliminateIrrelevantchromessChildren):
         (JSC::DFG::CSEPhase::setReplacement):
         (JSC::DFG::CSEPhase::performNodeCSE):
         * dfg/DFGCommon.cpp:
@@ -7521,7 +7521,7 @@
         (JSC::DFG::DCEPhase::run):
         (JSC::DFG::DCEPhase::findTypeCheckRoot):
         (JSC::DFG::DCEPhase::countEdge):
-        (JSC::DFG::DCEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::DCEPhase::eliminateIrrelevantchromessChildren):
         (JSC::DFG::performDCE):
         * dfg/DFGDCEPhase.h: Added.
         (DFG):
@@ -8017,14 +8017,14 @@
 
 2013-02-28  Filip Pizlo  <fpizlo@apple.com>
 
-        DFG Phantom node should be honest about the fact that it can exit
+        DFG chromess node should be honest about the fact that it can exit
         https://bugs.webkit.org/show_bug.cgi?id=111115
 
         Reviewed by Mark Hahnenberg.
         
         The chances of this having cause serious issues are low, since most clients of the
         NodeDoesNotExit flag run after CFA and CFA updates this properly. But one possible
-        case of badness is if the ByteCodeParser inserted a Phantom with a type check in
+        case of badness is if the ByteCodeParser inserted a chromess with a type check in
         between a LogicalNot and a Branch; then that peephole optimization in Fixup might
         go slightly wrong.
 
@@ -8052,7 +8052,7 @@
         Reviewed by Mark Hahnenberg.
         
         This adds a NodeExitsForward flag, which tells you the exit directionality of
-        type checks performed by the node. Even if you convert the node to a Phantom
+        type checks performed by the node. Even if you convert the node to a chromess
         and use the Edge UseKind for type checks, you'll still get the same exit
         directionality that the original node would have wanted.
 
@@ -8064,7 +8064,7 @@
         (JSC::DFG::CFGSimplificationPhase::run):
         (JSC::DFG::CFGSimplificationPhase::mergeBlocks):
         * dfg/DFGCPSRethreadingPhase.cpp:
-        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrPhantomLocalFor):
+        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrchromessLocalFor):
         * dfg/DFGCSEPhase.cpp:
         (JSC::DFG::CSEPhase::setReplacement):
         (JSC::DFG::CSEPhase::eliminate):
@@ -8076,7 +8076,7 @@
         * dfg/DFGNode.h:
         (Node):
         (JSC::DFG::Node::setOpAndDefaultNonExitFlags):
-        (JSC::DFG::Node::convertToPhantom):
+        (JSC::DFG::Node::convertTochromess):
         * dfg/DFGNodeFlags.cpp:
         (JSC::DFG::nodeFlagsAsString):
         * dfg/DFGNodeFlags.h:
@@ -9107,7 +9107,7 @@
         remembers those speculations, and doesn't change its mind about them even if the
         graph is transformed - for example if a node's child is repointed to a different
         node as part of CSE, CFG simplification, or folding. Each node ensures that it
-        executes the speculations promised by its edges. This is true even for Phantom
+        executes the speculations promised by its edges. This is true even for chromess
         nodes.
         
         This still leaves some craziness on the table for future work, like the
@@ -9188,7 +9188,7 @@
         (JSC::DFG::ByteCodeParser::handleMinMax):
         * dfg/DFGCSEPhase.cpp:
         (JSC::DFG::CSEPhase::setLocalStoreElimination):
-        (JSC::DFG::CSEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::CSEPhase::eliminateIrrelevantchromessChildren):
         (JSC::DFG::CSEPhase::setReplacement):
         (JSC::DFG::CSEPhase::performNodeCSE):
         * dfg/DFGCommon.h:
@@ -11393,8 +11393,8 @@
         (JSC::DFG::CPSRethreadingPhase::canonicalizeGetLocalFor):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeGetLocal):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeSetLocal):
-        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrPhantomLocalFor):
-        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrPhantomLocal):
+        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrchromessLocalFor):
+        (JSC::DFG::CPSRethreadingPhase::canonicalizeFlushOrchromessLocal):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeSetArgument):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeLocalsInBlock):
         (JSC::DFG::CPSRethreadingPhase::canonicalizeLocalsInBlocks):
@@ -11430,7 +11430,7 @@
         (JSC::DFG::Graph::performSubstitutionForEdge):
         (JSC::DFG::Graph::convertToConstant):
         * dfg/DFGNode.h:
-        (JSC::DFG::Node::convertToPhantomLocal):
+        (JSC::DFG::Node::convertTochromessLocal):
         (Node):
         (JSC::DFG::Node::convertToGetLocal):
         (JSC::DFG::Node::hasVariableAccessData):
@@ -11600,8 +11600,8 @@
         As well, care has been taken to make sure that the bytecode parser only does folding
         that is statically provable, and that doesn't arise out of speculation. This means
         we cannot fold on data flow that crosses inlining boundaries. On the other hand, the
-        folding that the bytecode parser uses doesn't require phantoming anything. Such is
-        the trade-off: for anything that we do need phantoming, we defer it to the
+        folding that the bytecode parser uses doesn't require chromessing anything. Such is
+        the trade-off: for anything that we do need chromessing, we defer it to the
         optimization fixpoint.
         
         Slight SunSpider speed-up.
@@ -11690,7 +11690,7 @@
 
 2013-02-05  Mark Hahnenberg  <mhahnenberg@apple.com>
 
-        put_to_base should emit a Phantom for "value" across the ForceOSRExit
+        put_to_base should emit a chromess for "value" across the ForceOSRExit
         https://bugs.webkit.org/show_bug.cgi?id=108998
 
         Reviewed by Oliver Hunt.
@@ -11700,7 +11700,7 @@
         * bytecode/CodeBlock.cpp:
         (JSC::CodeBlock::tallyFrequentExitSites): Build fixes for when DFG debug logging is enabled.
         * dfg/DFGByteCodeParser.cpp:
-        (JSC::DFG::ByteCodeParser::parseBlock): Added extra Phantoms for the "value" field where needed.
+        (JSC::DFG::ByteCodeParser::parseBlock): Added extra chromesss for the "value" field where needed.
         * dfg/DFGSpeculativeJIT.cpp:
         (JSC::DFG::SpeculativeJIT::compile): Ditto.
 
@@ -12918,7 +12918,7 @@
         (JSC::DFG::ArgumentsSimplificationPhase::observeBadArgumentsUses):
         (JSC::DFG::ArgumentsSimplificationPhase::observeProperArgumentsUse):
         (JSC::DFG::ArgumentsSimplificationPhase::isOKToOptimize):
-        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingPhantomChild):
+        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingchromessChild):
         * dfg/DFGArrayMode.cpp:
         (JSC::DFG::ArrayMode::originalArrayStructure):
         (JSC::DFG::ArrayMode::alreadyChecked):
@@ -13034,7 +13034,7 @@
         (JSC::DFG::CSEPhase::getLocalLoadElimination):
         (JSC::DFG::CSEPhase::setLocalStoreElimination):
         (JSC::DFG::CSEPhase::performSubstitution):
-        (JSC::DFG::CSEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::CSEPhase::eliminateIrrelevantchromessChildren):
         (JSC::DFG::CSEPhase::setReplacement):
         (JSC::DFG::CSEPhase::eliminate):
         (JSC::DFG::CSEPhase::performNodeCSE):
@@ -14740,7 +14740,7 @@
 
         * dfg/DFGCSEPhase.cpp:
         (JSC::DFG::CSEPhase::CSEPhase):
-        (JSC::DFG::CSEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::CSEPhase::eliminateIrrelevantchromessChildren):
         (JSC::DFG::CSEPhase::performNodeCSE):
         (JSC::DFG::CSEPhase::performBlockCSE):
         (CSEPhase):
@@ -15871,7 +15871,7 @@
 
 2013-01-11  Filip Pizlo  <fpizlo@apple.com>
 
-        If you use Phantom to force something to be live across an OSR exit, you should put it after the OSR exit
+        If you use chromess to force something to be live across an OSR exit, you should put it after the OSR exit
         https://bugs.webkit.org/show_bug.cgi?id=106724
 
         Reviewed by Oliver Hunt.
@@ -15884,7 +15884,7 @@
 
 2013-01-11  Filip Pizlo  <fpizlo@apple.com>
 
-        Phantom(GetLocal) should be treated as relevant to OSR
+        chromess(GetLocal) should be treated as relevant to OSR
         https://bugs.webkit.org/show_bug.cgi?id=106715
 
         Reviewed by Mark Hahnenberg.
@@ -16233,7 +16233,7 @@
 
         Reviewed by Mark Hahnenberg.
         
-        Use the fact that Phantom means that things escaped, and just insert Phantoms for all
+        Use the fact that chromess means that things escaped, and just insert chromesss for all
         of the operands.
 
         * dfg/DFGByteCodeParser.cpp:
@@ -16251,14 +16251,14 @@
 
 2013-01-07  Filip Pizlo  <fpizlo@apple.com>
 
-        DFG should backwards-propagate NodeUsedAsValue for Phantom
+        DFG should backwards-propagate NodeUsedAsValue for chromess
         https://bugs.webkit.org/show_bug.cgi?id=106299
 
         Reviewed by Mark Hahnenberg.
         
-        This is currently benign because Phantom is only inserted by the bytecode parser for
+        This is currently benign because chromess is only inserted by the bytecode parser for
         things that already happen to be used in contexts that backwards propagate
-        NodeUsedAsValue. But that doesn't change the fact that the semantics of Phantom are
+        NodeUsedAsValue. But that doesn't change the fact that the semantics of chromess are
         that the value can be arbitrarily used by the baseline JIT.
 
         * dfg/DFGPredictionPropagationPhase.cpp:
@@ -19838,13 +19838,13 @@
 
         Reviewed by Oliver Hunt.
 
-        Most Phantom nodes are inserted by CSE, and by default have the same children as the
-        node that CSE had eliminated. This change makes CSE inspect all Phantom nodes (both
+        Most chromess nodes are inserted by CSE, and by default have the same children as the
+        node that CSE had eliminated. This change makes CSE inspect all chromess nodes (both
         those it creates and those that were created by other phases) to see if they have
         children that are redundant - i.e. children that are not interesting to OSR, which
-        is the only reason why Phantoms exist in the first place. Being relevant to OSR is
+        is the only reason why chromesss exist in the first place. Being relevant to OSR is
         defined as one of: (1) you're a Phi, (2) you're a SetLocal, (3) somewhere between
-        your definition and the Phantom there was a SetLocal that referred to you.
+        your definition and the chromess there was a SetLocal that referred to you.
         
         This is a slight speed-up in a few places.
 
@@ -19853,7 +19853,7 @@
         (JSC::DFG::CSEPhase::run):
         (JSC::DFG::CSEPhase::performSubstitution):
         (CSEPhase):
-        (JSC::DFG::CSEPhase::eliminateIrrelevantPhantomChildren):
+        (JSC::DFG::CSEPhase::eliminateIrrelevantchromessChildren):
         (JSC::DFG::CSEPhase::setReplacement):
         (JSC::DFG::CSEPhase::eliminate):
         (JSC::DFG::CSEPhase::performNodeCSE):
@@ -24281,7 +24281,7 @@
 
 2012-10-25  Filip Pizlo  <fpizlo@apple.com>
 
-        Forward OSR calculation is wrong in the presence of multiple SetLocals, or a mix of SetLocals and Phantoms
+        Forward OSR calculation is wrong in the presence of multiple SetLocals, or a mix of SetLocals and chromesss
         https://bugs.webkit.org/show_bug.cgi?id=100461
 
         Reviewed by Oliver Hunt and Gavin Barraclough.
@@ -24399,7 +24399,7 @@
 
 2012-10-25  Filip Pizlo  <fpizlo@apple.com>
 
-        DFG Arrayify elimination should replace it with GetButterfly rather than Phantom
+        DFG Arrayify elimination should replace it with GetButterfly rather than chromess
         https://bugs.webkit.org/show_bug.cgi?id=100441
 
         Reviewed by Oliver Hunt and Gavin Barraclough.
@@ -28529,7 +28529,7 @@
         (JSC::DFG::ArgumentsSimplificationPhase::observeBadArgumentsUse):
         (JSC::DFG::ArgumentsSimplificationPhase::observeProperArgumentsUse):
         (JSC::DFG::ArgumentsSimplificationPhase::isOKToOptimize):
-        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingPhantomChild):
+        (JSC::DFG::ArgumentsSimplificationPhase::removeArgumentsReferencingchromessChild):
         * dfg/DFGAssemblyHelpers.cpp:
         (JSC::DFG::AssemblyHelpers::decodedCodeMapFor):
         * dfg/DFGByteCodeCache.h:

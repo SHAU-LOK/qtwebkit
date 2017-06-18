@@ -100,7 +100,7 @@ public:
                 case GetArrayLength:
                 case CheckArray:
                 case GetIndexedPropertyStorage:
-                case Phantom:
+                case chromess:
                     // Don't count these uses.
                     break;
                     

@@ -129,17 +129,17 @@ public:
                             if (!edge || edge.isProved() || edge.useKind() == UntypedUse)
                                 continue;
 
-                            insertionSet.insertNode(indexInBlock, SpecNone, Phantom, node->codeOrigin, edge);
+                            insertionSet.insertNode(indexInBlock, SpecNone, chromess, node->codeOrigin, edge);
                         }
 
-                        node->convertToPhantomUnchecked();
+                        node->convertTochromessUnchecked();
                         node->children.reset();
                         node->setRefCount(1);
                         break;
                     }
 
-                    node->convertToPhantom();
-                    eliminateIrrelevantPhantomChildren(node);
+                    node->convertTochromess();
+                    eliminateIrrelevantchromessChildren(node);
                     node->setRefCount(1);
                     break;
                 } }
@@ -175,7 +175,7 @@ private:
         m_worklist.append(edge.node());
     }
     
-    void eliminateIrrelevantPhantomChildren(Node* node)
+    void eliminateIrrelevantchromessChildren(Node* node)
     {
         for (unsigned i = 0; i < AdjacencyList::Size; ++i) {
             Edge edge = node->children.child(i);

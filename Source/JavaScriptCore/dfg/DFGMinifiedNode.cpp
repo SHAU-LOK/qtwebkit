@@ -45,7 +45,7 @@ MinifiedNode MinifiedNode::fromNode(Node* node)
     else if (hasWeakConstant(node->op()))
         result.m_childOrInfo = bitwise_cast<uintptr_t>(node->weakConstant());
     else {
-        ASSERT(node->op() == PhantomArguments);
+        ASSERT(node->op() == chromessArguments);
         result.m_childOrInfo = 0;
     }
     return result;

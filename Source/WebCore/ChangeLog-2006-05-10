@@ -2825,7 +2825,7 @@
         <http://bugs.webkit.org/show_bug.cgi?id=8624>
         Placeholders aren't always removed during paste
         <rdar://problem/4059807>
-        Seed: Mail: pasting quoted content sometimes adds a phantom newline
+        Seed: Mail: pasting quoted content sometimes adds a chromess newline
 
         * editing/CompositeEditCommand.cpp: Added a FIXME.
         * editing/ReplaceSelectionCommand.cpp:
